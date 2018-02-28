@@ -22,6 +22,7 @@ import {
 import reducers from './reducer.js'
 import Auth from './Auth.js';
 import Dashboard from './Dashboard.js';
+import './config.js'
 
 const store = createStore(reducers, compose(applyMiddleware(thunk),
 	window.devToolsExtension ? window.devToolsExtension() : () => {}

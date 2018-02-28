@@ -98,8 +98,9 @@ app.get('', (req, res) => {
 
 app.get('/data', (req, res) => {
 	res.json({
-		name: 'jason wang',
-		type: 'IT'
+		user: 'jason wang',
+		type: 'IT',
+		age: 18
 	});
 });
 
