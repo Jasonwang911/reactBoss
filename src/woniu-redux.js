@@ -43,10 +43,14 @@ function bindActionCreator(creator, dispatch) {
 }
 // 第一个参数是生成器
 export function bindActionCreators(creators, dispath) {
-	let bound = {};
-	Object.keys(creator).forEach(v => {
-		let creator = creators[v];
-		bound[v] = bindActionCreator(creator, dispatch)
-	})
+	// let bound = {};
+	// Object.keys(creator).forEach(v => {
+	// 	let creator = creators[v];
+	// 	bound[v] = bindActionCreator(creator, dispatch)
+	// })
+	return Object.keys(creators).reduce((ret, item) => {
+		ret[item] = bindActionCreator(creator, dispatch)
+		return ret;
+	}, {})
 	return bound;
 }
