@@ -24,21 +24,26 @@ import Auth from './Auth.js';
 import Dashboard from './Dashboard.js';
 import './config.js'
 
-const store = createStore(reducers, compose(applyMiddleware(thunk),
-	window.devToolsExtension ? window.devToolsExtension() : () => {}
-));
+import Page from './context.demo.js'
 
-ReactDom.render(
-	(
-		<Provider store={store}>
-			<BrowserRouter>
-				<Switch>
-					{/* 只渲染命中的第一个Route */}
-					<Route path='/login' exact component={Auth}></Route>
-					<Route path='/dashboard' component={Dashboard}></Route>
-					<Redirect to='/dashboard'></Redirect>
-				</Switch>
-			</BrowserRouter>
-		</Provider>
-	), document.getElementById('root')
-)
+
+ReactDom.render(<Page></Page>, document.getElementById('root'));
+
+// const store = createStore(reducers, compose(applyMiddleware(thunk),
+// 	window.devToolsExtension ? window.devToolsExtension() : f => f
+// ));
+
+// ReactDom.render(
+// 	(
+// 		<Provider store={store}>
+// 			<BrowserRouter>
+// 				<Switch>
+// 					{/* 只渲染命中的第一个Route */}
+// 					<Route path='/login' exact component={Auth}></Route>
+// 					<Route path='/dashboard' component={Dashboard}></Route>
+// 					<Redirect to='/dashboard'></Redirect>
+// 				</Switch>
+// 			</BrowserRouter>
+// 		</Provider>
+// 	), document.getElementById('root')
+// )
