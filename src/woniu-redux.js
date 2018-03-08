@@ -1,7 +1,12 @@
 // redux 的实现，此函数并没有进行容错处理，是一个简版的redux
 
 // 对外暴漏的唯一接口
-export function createStore(reducer) {
+// enhancer 中间件的增强器
+export function createStore(reducer, enhancer) {
+	if (enhancer) {
+		// 使用enhancer把createStore包一层再把 reducer 传递进去
+		return enhancer(createStore)(reducer);
+	}
 	// 存储的当前状态
 	let currentState = {};
 	// 当前的监听器
@@ -36,6 +41,27 @@ export function createStore(reducer) {
 	};
 }
 
+// 中间件 middlewares 是一个数组
+export function applyMiddleware(middlewares) {
+	// 多个需要遍历 middlewares.map...
+	// 两层函数，将第一层函数参数全部获取并以数组的形式传入第二层
+	return createStore => (...args) => {
+		const store = createStore(...args);
+		let dispatch = store.dispatch;
+		const midApi = {
+			// 颗粒化
+			getState: store.getState,
+			dispatch: (...args) => dispatch(...args)
+		}
+		middlewareChain = middlewares.map(middleware => middleware(midApi))
+		// dispatch = middleware(midApi)(store.dispatch);
+		return {
+			...store,
+			dispatch
+		}
+	}
+}
+
 // 专门绑定dispatch的函数
 function bindActionCreator(creator, dispatch) {
 	// 使用透传的方法  把  {xxx(参数)} 变成 dispatch(xxx(参数))
@@ -43,14 +69,14 @@ function bindActionCreator(creator, dispatch) {
 }
 // 第一个参数是生成器
 export function bindActionCreators(creators, dispath) {
-	// let bound = {};
-	// Object.keys(creator).forEach(v => {
-	// 	let creator = creators[v];
-	// 	bound[v] = bindActionCreator(creator, dispatch)
-	// })
-	return Object.keys(creators).reduce((ret, item) => {
-		ret[item] = bindActionCreator(creator, dispatch)
-		return ret;
-	}, {})
+	let bound = {};
+	Object.keys(creator).forEach(v => {
+		let creator = creators[v];
+		bound[v] = bindActionCreator(creator, dispatch)
+	})
+	// return Object.keys(creators).reduce((ret, item) => {
+	// 	ret[item] = bindActionCreator(creator, dispatch)
+	// 	return ret;
+	// }, {})
 	return bound;
 }
