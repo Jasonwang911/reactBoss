@@ -41,19 +41,34 @@ export function createStore(reducer, enhancer) {
 	};
 }
 
+// compose(fn1,fn2,fn3) ==> return fn1(fn2(fn3))
+export function compose(...funcs) {
+	if (funcs.length == 0) {
+		return arg => arg;
+	}
+	if (funcs.length == 1) {
+		return funcs[0];
+	}
+	return funcs.reduce((ret, item) => (...args) => ret(item(...args)))
+}
+
 // 中间件 middlewares 是一个数组
-export function applyMiddleware(middlewares) {
+export function applyMiddleware(...middlewares) {
 	// 多个需要遍历 middlewares.map...
 	// 两层函数，将第一层函数参数全部获取并以数组的形式传入第二层
 	return createStore => (...args) => {
 		const store = createStore(...args);
 		let dispatch = store.dispatch;
+		// 中间件的接口，
 		const midApi = {
 			// 颗粒化
 			getState: store.getState,
 			dispatch: (...args) => dispatch(...args)
 		}
-		middlewareChain = middlewares.map(middleware => middleware(midApi))
+		// 遍历中间件
+		const middlewareChain = middlewares.map(middleware => middleware(midApi))
+		// 把所有的中间件包一层
+		dispatch = compose(...middlewareChain)(store.dispatch)
 		// dispatch = middleware(midApi)(store.dispatch);
 		return {
 			...store,
